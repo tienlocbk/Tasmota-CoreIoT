@@ -918,12 +918,39 @@ void MqttPublishTeleState(void)
   XdrvRulesProcess(1);
 }
 
+// void TempHumDewShow(bool json, bool pass_on, const char *types, float f_temperature, float f_humidity)
+// {
+//   if (json) {
+//     ResponseAppend_P(PSTR(",\"%s\":{"), types);
+//     ResponseAppendTHD(f_temperature, f_humidity);
+//     ResponseJsonEnd();
+// #ifdef USE_DOMOTICZ
+//     if (pass_on) {
+//       DomoticzTempHumPressureSensor(f_temperature, f_humidity);
+//     }
+// #endif  // USE_DOMOTICZ
+// #ifdef USE_KNX
+//     if (pass_on) {
+//       KnxSensor(KNX_TEMPERATURE, f_temperature);
+//       KnxSensor(KNX_HUMIDITY, f_humidity);
+//     }
+// #endif  // USE_KNX
+// #ifdef USE_WEBSERVER
+//   } else {
+//     WSContentSend_THD(types, f_temperature, f_humidity);
+// #endif  // USE_WEBSERVER
+//   }
+// }
 void TempHumDewShow(bool json, bool pass_on, const char *types, float f_temperature, float f_humidity)
 {
   if (json) {
-    ResponseAppend_P(PSTR(",\"%s\":{"), types);
+    // MODIFICATION: Add a comma to separate from the "Time" key
+    ResponseAppend_P(PSTR(","));
+
+    // This function now adds the T, H, and D keys directly
     ResponseAppendTHD(f_temperature, f_humidity);
-    ResponseJsonEnd();
+
+    // MODIFICATION: Removed the ResponseJsonEnd() line because we are no longer closing a nested object
 #ifdef USE_DOMOTICZ
     if (pass_on) {
       DomoticzTempHumPressureSensor(f_temperature, f_humidity);
@@ -941,7 +968,6 @@ void TempHumDewShow(bool json, bool pass_on, const char *types, float f_temperat
 #endif  // USE_WEBSERVER
   }
 }
-
 String GetSwitchText(uint32_t i) {
   String switch_text = "";
   if (i < MAX_SWITCHES_TXT) {
